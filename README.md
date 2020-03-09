@@ -8,6 +8,7 @@ Supported platform in plan:
 * Feiteng (aarch64 & armhf)
 * Raspberry Pi 4 (aarch64 & armhf)
 
+<<<<<<< HEAD
 ## Dependencies
 
 All images will create from scratch by debootstrap, then generate to images or isos, so you need install some Ubuntu(Debian) tools. This is a necessary dependencies list: `debootstrap qemu-user-static qemu-debootstrap squashfs-tools genisoimage`.
@@ -22,6 +23,10 @@ All images will create from scratch by debootstrap, then generate to images or i
 
 [ ] In progress.
 
+=======
+## Document
+
+>>>>>>> 0e8872c... Fix README path
 ### Raspberry Pi 4 (raspi4)
 
 It provided `raspi4/build.sh` to easily build raspi4 preinstalled image. You can run `raspi4/build.sh -h` get usage infomation.
@@ -36,6 +41,7 @@ Some available  optional arguments:
 
 * `-a` Assign the target image arch when you want to cross build, for example, generate arm64 image on amd64. At the same time, you need activate `-c` arguments. Example: `raspi4/build.sh -a arm64 -c -r focal`
 * `-m` Set the mirror url. When you have a slow connections to the offical repository, recommend to use closer mirror site. Example: `raspi4/build.sh -r focal -m http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports`. NOTE: DONT end with a slash.
+<<<<<<< HEAD
 * `-p` Set http proxy for `apt` and `debootstrap`. Sometimes, the synchronization of the mirror site is not good, you also can choose to use a proxy. Only support http proxy now. Example: `raspi4/build.sh -r focal -p http://127.0.0.1:8080` 
 
 If you want to modifed packages that will be installed on build, you can just edit the package list file in `raspi4/pkg`. different files should store package names for different purposes.
@@ -46,3 +52,6 @@ If you want to modifed packages that will be installed on build, you can just ed
 * `ukui-packages`: UKUI desktop environment packages put here.
 
 Tips: If you abort build when script run, you need manually umount `$TARGET_ROOTFS_DIR/{proc,sys}`.
+=======
+* `-p` Set http proxy for `apt` and `debootstrap`. Sometimes, the synchronization of the mirror site is not good, you also can choose to use a proxy. Only support http proxy now. 
+>>>>>>> 0e8872c... Fix README path
