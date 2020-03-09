@@ -285,7 +285,7 @@ function checkenv {
     fi
 }
 
-while getopts ":a:c:h:p:r:" o; do
+while getopts ":a:c:h:m:p:r:" o; do
     case "${o}" in
         a) TARGET_ARCH=${OPTARG}
            ;;
