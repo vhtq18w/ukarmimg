@@ -213,7 +213,7 @@ EOM
 
 function rootfs_config {
     fix_rapsi2_firmware
-    
+    umount_config
     mount_config
     
     if [ ! -z $REPO_MIRROR ]; then
@@ -235,6 +235,7 @@ function rootfs_config {
     add_ppas
     install_ukui_packages
     install_packages
+    chroot $TARGET_ROOTFS_DIR apt upgrade
     hostname_config
     fstab_config
     hosts_config
