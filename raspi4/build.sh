@@ -202,6 +202,7 @@ EOM
     mount "$EXT4_LOOP" "$TARGET_MOUNT_DIR"
     mkdir -p "$TARGET_MOUNT_DIR/boot/firmware"
     mount "$VFAT_LOOP" "$TARGET_MOUNT_DIR/boot/firmware"
+    echo "Sync rootfs to image..."
     rsync -a "$TARGET_ROOTFS_DIR/" "$TARGET_MOUNT_DIR/"
     umount "$TARGET_MOUNT_DIR"/boot/firmware
     umount "$TARGET_MOUNT_DIR"
