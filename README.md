@@ -9,6 +9,7 @@ Supported platform in plan:
 * Raspberry Pi 4 (aarch64 & armhf)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Dependencies
 
 All images will create from scratch by debootstrap, then generate to images or isos, so you need install some Ubuntu(Debian) tools. This is a necessary dependencies list: `debootstrap qemu-user-static qemu-debootstrap squashfs-tools genisoimage`.
@@ -27,6 +28,22 @@ All images will create from scratch by debootstrap, then generate to images or i
 ## Document
 
 >>>>>>> 0e8872c... Fix README path
+=======
+## Dependencies
+
+All images will create from scratch by debootstrap, then generate to images or isos, so you need install some Ubuntu(Debian) tools. This is a necessary dependencies list: `debootstrap qemu-user-static qemu-debootstrap syslinux squashfs-tools genisoimage`.
+
+## Document
+
+## Kunpeng
+
+[ ] In progress.
+
+## Feiteng
+
+[ ] In progress.
+
+>>>>>>> 81e5e93... Add kunpeng to plan
 ### Raspberry Pi 4 (raspi4)
 
 It provided `raspi4/build.sh` to easily build raspi4 preinstalled image. You can run `raspi4/build.sh -h` get usage infomation.
