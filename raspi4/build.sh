@@ -42,8 +42,8 @@ EOM
 
 function write_apt_proxy {
     cat <<EOM > $TARGET_ROOTFS_DIR/etc/apt/apt.conf.d/20proxy
-Acquire::Http::Proxy "$APT_PROXY";
-Acquire::Https::Proxy "$APT_PROXY";
+Acquire::Http::Proxy \"$APT_PROXY\";
+Acquire::Https::Proxy \"$APT_PROXY\";
 EOM
 }
 
@@ -90,7 +90,7 @@ function install_packages {
 }
 
 function build {
-    if [ ! -z $REPO_MIRROR ]; then
+    if [ ! -z ${REPO_MIRROR} ]; then
         UBUNTU_PORTS_URL=$REPO_MIRROR
     else        
         UBUNTU_PORTS_URL="$UBUNTU_DEFAULT_PORTS_URL"
@@ -98,7 +98,7 @@ function build {
     echo "That will checkout packages from $UBUNTU_PORTS_URL"
     if [ ! -d $TARGET_ROOTFS_DIR ]; then
         mkdir -p $TARGET_ROOTFS_DIR
-        if [ ! -z "$CROSS_ARCH" ]; then
+        if [ ! -z ${CROSS_ARCH} ]; then
             qemu-debootstrap --arch $TARGET_ARCH $TARGET_RELEASE $TARGET_ROOTFS_DIR $UBUNTU_PORTS_URL 
         else
             debootstrap $TARGET_RELEASE $TARGET_ROOTFS_DIR $UBUNTU_PORTS_URL
@@ -182,7 +182,6 @@ function write_image_zero {
 
 function genimage {
     genimage_name
-    umount_config
     img_clean
     write_image_zero
     sfdisk -f "${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME}" <<EOM
@@ -203,21 +202,21 @@ EOM
     mkdir -p "$TARGET_MOUNT_DIR/boot/firmware"
     mount "$VFAT_LOOP" "$TARGET_MOUNT_DIR/boot/firmware"
     echo "Sync rootfs to image..."
-    rsync -a "$TARGET_ROOTFS_DIR/" "$TARGET_MOUNT_DIR/"
+    rsync -av "$TARGET_ROOTFS_DIR/" "$TARGET_MOUNT_DIR/"
     umount "$TARGET_MOUNT_DIR"/boot/firmware
     umount "$TARGET_MOUNT_DIR"
     losetup -d "$EXT4_LOOP"
     losetup -d "$VFAT_LOOP"
-    echo "Export target image to ${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME} ."
+    echo "Success. Export target image to ${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME} ."
     exit 1
 }
 
 function rootfs_config {
     fix_rapsi2_firmware
-    umount_config
+    #umount_config
     mount_config
     
-    if [ ! -z $REPO_MIRROR ]; then
+    if [ ! -z ${REPO_MIRROR} ]; then
         UBUNTU_PORTS_URL=$REPO_MIRROR
         echo "Target rootfs will checkout packages from $UBUNTU_PORTS_URL"
     else
@@ -226,19 +225,19 @@ function rootfs_config {
     
     write_repo
 
-    if [ ! -z $APT_PROXY ]; then
+    if [ ! -z ${APT_PROXY} ]; then
         write_apt_proxy
     fi
 
     chroot $TARGET_ROOTFS_DIR apt update
 
     install_common_packages
-    add_ppas
     install_ukui_packages
     install_packages
-    chroot $TARGET_ROOTFS_DIR apt upgrade
+    add_ppas
+    chroot $TARGET_ROOTFS_DIR apt -y upgrade
     UBUNTU_PORTS_URL=$UBUNTU_DEFAULT_PORTS_URL
-    wirte_repo
+    write_repo
     hostname_config
     fstab_config
     hosts_config
@@ -260,7 +259,7 @@ function checkenv {
 
     mkdir -p $TARGET_EXPORT_DIR
 
-    if [ ! -z $proxy ]; then
+    if [ ! -z ${proxy} ]; then
         export http_proxy=$proxy
         export https_proxy=$proxy
     fi
@@ -307,6 +306,5 @@ done
 shift $((OPTIND-1))
 
 checkenv
-
 rootfs_config
 genimage

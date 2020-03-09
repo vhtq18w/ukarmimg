@@ -31,7 +31,7 @@ All images will create from scratch by debootstrap, then generate to images or i
 =======
 ## Dependencies
 
-All images will create from scratch by debootstrap, then generate to images or isos, so you need install some Ubuntu(Debian) tools. This is a necessary dependencies list: `debootstrap qemu-user-static qemu-debootstrap syslinux squashfs-tools genisoimage`.
+All images will create from scratch by debootstrap, then generate to images or isos, so you need install some Ubuntu(Debian) tools. This is a necessary dependencies list: `debootstrap qemu-user-static qemu-debootstrap squashfs-tools genisoimage`.
 
 ## Document
 
@@ -71,6 +71,7 @@ If you want to modifed packages that will be installed on build, you can just ed
 * `RELEASE-ppas`: The ppa repository you want to add should be put here.
 * `ukui-packages`: UKUI desktop environment packages put here.
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 Tips: If you abort build when script run, you need manually umount `$TARGET_ROOTFS_DIR/{proc,sys}`.
 =======
@@ -78,3 +79,7 @@ Tips: If you abort build when script run, you need manually umount `$TARGET_ROOT
 >>>>>>> 0e8872c... Fix README path
 =======
 >>>>>>> f70afc5... Update README
+=======
+
+Tips: If you abort build when script run, you need manually umount `$TARGET_ROOTFS_DIR/{proc,sys}`.
+>>>>>>> 49aea3f... rsync: /proc sync failed
