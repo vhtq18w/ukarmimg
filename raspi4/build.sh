@@ -116,7 +116,72 @@ function umount_config {
     umount $TARGET_ROOTFS_DIR/sys
 }
 
+function hostname_config {
+    echo ubuntukylin >$TARGET_ROOTFS_DIR/etc/hostname
+}
+
+function fstab_config {
+    cat <<EOM >$TARGET_ROOTFS_DIR/etc/fstab
+proc            /proc           proc    defaults          0       0
+/dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
+/dev/mmcblk0p1  /boot/firmware  vfat    defaults          0       2
+EOM
+}
+
+function hosts_config {
+    cat <<EOM >$TARGET_ROOTFS_DIR/etc/hosts
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+EOM
+}
+
+function user_group_config {
+    chroot $TARGET_ROOTFS_DIR adduser --gecos "UbuntuKylin user" --add_extra_groups --disabled-password ubuntukylin
+    chroot $TARGET_ROOTFS_DIR usermod -a -G sudo,adm -p '$1$.NBXnqSb$e11MEXIT/6SCDt.fTKa2X/' ubuntukylin
+}
+
+function network_config {
+    cat <<EOM >$TARGET_ROOTFS_DIR/etc/network/interfaces
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+# The loopback network interface
+auto lo
+iface lo inet loopback
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet dhcp
+EOM
+}
+
+function img_clean {
+    chroot $TARGET_ROOTFS_DIR apt clean
+    rm -f $TARGET_ROOTFS_DIR/etc/apt/sources.list.save
+    rm -f $TARGET_ROOTFS_DIR/etc/resolvconf/resolv.conf.d/original
+    rm -rf $TARGET_ROOTFS_DIR/run
+    mkdir -p $TARGET_ROOTFS_DIR/run
+    rm -f $TARGET_ROOTFS_DIR/etc/*-
+    rm -f $TARGET_ROOTFS_DIR/root/.bash_history
+    rm -rf $TARGET_ROOTFS_DIR/tmp/*
+    rm -f $TARGET_ROOTFS_DIR/var/lib/urandom/random-seed
+    [ -L $TARGET_ROOTFS_DIR/var/lib/dbus/machine-id ] || rm -f $TARGET_ROOTFS_DIR/var/lib/dbus/machine-id
+    rm -f $TARGET_ROOTFS_DIR/etc/machine-id
+}
+
+function genimage_name {
+    EXPORT_IMAGE_NAME="ubuntukylin-${TARGET_RELEASE}-${TARGET_ARCH}-$(date +%Y-%m-%d).img"
+}
+
+function genimage {
+    genimage_name
+    
+}
+
 function rootfs_config {
+    fix_rapsi2_firmware
+    
     mount_config
     
     if [ ! -z $REPO_MIRROR ]; then
@@ -141,6 +206,11 @@ function rootfs_config {
     install_ukui_packages
 
     install_packages
+}
+
+function fix_rapsi2_firmware {
+    sudo mkdir -p $TARGET_ROOTFS_DIR/boot/firmware
+    sudo mkdir -p $TARGET_ROOTFS_DIR/boot/firmware/overlays
 }
 
 
