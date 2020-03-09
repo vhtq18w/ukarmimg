@@ -159,6 +159,7 @@ EOM
 function img_clean {
     chroot $TARGET_ROOTFS_DIR apt clean
     rm -f $TARGET_ROOTFS_DIR/etc/apt/sources.list.save
+    rm -f $TARGET_ROOTFS_DIR/etc/apt/apt.conf.d/20proxy
     rm -f $TARGET_ROOTFS_DIR/etc/resolvconf/resolv.conf.d/original
     rm -rf $TARGET_ROOTFS_DIR/run
     mkdir -p $TARGET_ROOTFS_DIR/run
@@ -174,9 +175,40 @@ function genimage_name {
     EXPORT_IMAGE_NAME="ubuntukylin-${TARGET_RELEASE}-${TARGET_ARCH}-$(date +%Y-%m-%d).img"
 }
 
+function write_image_zero {
+    dd if=/dev/zero of="${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME}" bs=1M count=1
+    dd if=/dev/zero of="${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME}" bs=1M count=0 seek=4096
+}
+
 function genimage {
     genimage_name
-    
+    umount_config
+    img_clean
+    write_image_zero
+    sfdisk -f "${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME}" <<EOM
+unit: sectors
+
+1 : start=     2048, size=   526336, Id= c, bootable
+2 : start=   528384, size=  7862272, Id=83
+3 : start=        0, size=        0, Id= 0
+4 : start=        0, size=        0, Id= 0
+EOM
+    VFAT_LOOP="$(losetup -o 1M --sizelimit 256M -f --show ${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME})"
+    EXT4_LOOP="$(losetup -o 257M --sizelimit 3840M -f --show ${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME})"
+    mkfs.vfat "$VFAT_LOOP"
+    mkfs.ext4 "$EXT4_LOOP"
+    TARGET_MOUNT_DIR="$(pwd)/mount"
+    mkdir -p "$TARGET_MOUNT_DIR"
+    mount "$EXT4_LOOP" "$TARGET_MOUNT_DIR"
+    mkdir -p "$TARGET_MOUNT_DIR/boot/firmware"
+    mount "$VFAT_LOOP" "$TARGET_MOUNT_DIR/boot/firmware"
+    rsync -a "$TARGET_ROOTFS_DIR/" "$TARGET_MOUNT_DIR/"
+    umount "$TARGET_MOUNT_DIR"/boot/firmware
+    umount "$TARGET_MOUNT_DIR"
+    losetup -d "$EXT4_LOOP"
+    losetup -d "$VFAT_LOOP"
+    echo "Export target image to ${TARGET_EXPORT_DIR}/${EXPORT_IMAGE_NAME} ."
+    exit 1
 }
 
 function rootfs_config {
@@ -200,12 +232,14 @@ function rootfs_config {
     chroot $TARGET_ROOTFS_DIR apt update
 
     install_common_packages
-    
     add_ppas
-
     install_ukui_packages
-
     install_packages
+    hostname_config
+    fstab_config
+    hosts_config
+    user_group_config
+    network_config
 }
 
 function fix_rapsi2_firmware {
@@ -271,3 +305,4 @@ shift $((OPTIND-1))
 checkenv
 
 rootfs_config
+genimage
