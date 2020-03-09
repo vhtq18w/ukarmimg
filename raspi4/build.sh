@@ -260,7 +260,7 @@ function checkenv {
 
     mkdir -p $TARGET_EXPORT_DIR
 
-    if [ -z $proxy ]; then
+    if [ ! -z $proxy ]; then
         export http_proxy=$proxy
         export https_proxy=$proxy
     fi
