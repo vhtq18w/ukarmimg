@@ -106,7 +106,19 @@ function build {
     fi
 }
 
+function mount_config {
+    mount -t proc none $TARGET_ROOTFS_DIR/proc
+    mount -t sysfs none $TARGET_ROOTFS_DIR/sys
+}
+
+function umount_config {
+    umount $TARGET_ROOTFS_DIR/proc
+    umount $TARGET_ROOTFS_DIR/sys
+}
+
 function rootfs_config {
+    mount_config
+    
     if [ ! -z $REPO_MIRROR ]; then
         UBUNTU_PORTS_URL=$REPO_MIRROR
         echo "Target rootfs will checkout packages from $UBUNTU_PORTS_URL"
@@ -138,6 +150,8 @@ function checkenv {
     echo "Target arch: $TARGET_ARCH"
     echo "Target rootfs path: $TARGET_ROOTFS_DIR"
 
+    mkdir -p $TARGET_EXPORT_DIR
+
     if [ -z $proxy ]; then
         export http_proxy=$proxy
         export https_proxy=$proxy
@@ -159,9 +173,8 @@ function checkenv {
         esac
     else
         mkdir -p $TARGET_BUILD_DIR
+        build
     fi
-
-    mkdir -p $TARGET_EXPORT_DIR
 }
 
 while getopts ":a:c:h:p:r:" o; do
