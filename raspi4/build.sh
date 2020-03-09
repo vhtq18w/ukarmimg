@@ -41,7 +41,7 @@ EOM
 }
 
 function write_apt_proxy {
-    cat <<EOM $TARGET_ROOTFS_DIR/etc/apt/apt.conf.d/20proxy
+    cat <<EOM > $TARGET_ROOTFS_DIR/etc/apt/apt.conf.d/20proxy
 Acquire::Http::Proxy "$APT_PROXY";
 Acquire::Https::Proxy "$APT_PROXY";
 EOM
@@ -134,9 +134,9 @@ function rootfs_config {
 
     chroot $TARGET_ROOTFS_DIR apt update
 
-    add_ppas
-
     install_common_packages
+    
+    add_ppas
 
     install_ukui_packages
 
