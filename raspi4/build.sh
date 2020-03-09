@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-set -x
-
 UBUNTU_DEFAULT_PORTS_URL="http://ports.ubuntu.com"
 UBUNTU_PORTS_URL="$UBUNTU_DEFAULT_PORTS_URL"
 
@@ -181,6 +178,7 @@ function write_image_zero {
 }
 
 function genimage {
+    umount_config
     genimage_name
     img_clean
     write_image_zero
