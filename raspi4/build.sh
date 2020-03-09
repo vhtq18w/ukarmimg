@@ -237,6 +237,8 @@ function rootfs_config {
     install_ukui_packages
     install_packages
     chroot $TARGET_ROOTFS_DIR apt upgrade
+    UBUNTU_PORTS_URL=$UBUNTU_DEFAULT_PORTS_URL
+    wirte_repo
     hostname_config
     fstab_config
     hosts_config
