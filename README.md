@@ -22,7 +22,7 @@ You cant get all parameters usage infomation through `bin/ukarmimg.sh -h`
 
 No matter how you run this script, you must specify three parameters, it about archtecture, platform, and Ubunut release.
 
-You can set archtecture through `--arch`(`-a`), the architectures that are now supported now are `arm64`(`aarch64`), the plan also provides `armhf`, `amd64`.
+You can set archtecture through `--arch`(`-a`), the architectures that are now supported are `arm64`(`aarch64`), the plan also provides `armhf`, `amd64`.
 
 As mentioned earlier, the main purpose of this repository is to provide images generate tool for Phytium, Kunpeng and Raspberry Pi4. You can specify `--platfrom`(`-p`) and set its value to `kunpeng`, `feiteng` or `raspi4`.
 
