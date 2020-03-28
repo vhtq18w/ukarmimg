@@ -17,3 +17,7 @@ We provide a minimized build image:
 * [focal-base-build.img](https://ukmirror.oss-cn-beijing.aliyuncs.com/focal/ubuntu-focal-base-build.img)
 
 It only include Linux kernel and necessary tools.
+
+## Introduction
+
+It is recommended not to download unnecessarily. In order to speed up the download, I use the Alicloud OSS service which is very expenisve.
