@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-UKARMIMG_HOME="$(dirname "$(pwd)")"
+UKARMIMG_HOME="$(dirname $(cd `dirname $0`; pwd))"
 #BIN_DIR=${UKARMIMG_HOME}/bin
 BUILD_DIR=${UKARMIMG_HOME}/build
 CONFIG_DIR=${UKARMIMG_HOME}/config
@@ -14,7 +14,6 @@ UBUNTU_DEFAULT_REPO="http://ports.ubuntu.com"
 REPO_URL="$UBUNTU_DEFAULT_REPO"
 
 if [ -f "$LIB_DIR/functions" ]; then
-    #. "${LIB_DIR}/functions"
     . "${LIB_DIR}/functions"
 fi
 
@@ -266,8 +265,8 @@ function rootfs_configure_raspi4() {
     auto_umount "$TARGET_ROOTFS_DIR/proc"
     auto_umount "$TARGET_ROOTFS_DIR/sys"
     sudo mount -t proc none "$TARGET_ROOTFS_DIR/proc"
-    sudo mount -t sysfs none "$TARGET_ROOTFS_DIR/sysfs"
-    chroot_check_directory_will_warning "$TARGET_ROOTFS_DIR/boot/firmware"
+    sudo mount -t sysfs none "$TARGET_ROOTFS_DIR/sys"
+    chroot_check_directory_will_warning "$TARGET_ROOTFS_DIR" "${TARGET_ROOTFS_DIR}/boot/firmware"
     chroot_copy_file_to_directory "${UBOOT_DIR}/${TARGET_PLATFORM}/*" "${TARGET_ROOTFS_DIR}/boot/firmware"
     if check_var_will_bool "$REPO_MIRROR"; then
         REPO_URL="$REPO_MIRROR"
@@ -281,8 +280,8 @@ function rootfs_configure_raspi4() {
     fi
     wecho "Install necessary packages"
     chroot_apt_update "$TARGET_ROOTFS_DIR"
-    chroot_install_package "software-properties-common"
-    chroot_install_package "ubuntu-keyring"
+    chroot_install_package "$TARGET_ROOTFS_DIR" "software-properties-common"
+    chroot_install_package "$TARGET_ROOTFS_DIR" "ubuntu-keyring"
     chroot_add_ppa_from_file "$TARGET_ROOTFS_DIR" "${REPOS_DIR}/{$TARGET_PLATFORM}/${TARGET_RELEASE}-ppas"
     chroot_install_packages_from_file "$TARGET_ROOTFS_DIR" "${PACKAGES_DIR}/{$TARGET_PLATFORM}/${TARGET_RELEASE}-packages.install"
     chroot_remove_packages_from_file "$TARGET_ROOTFS_DIR" "${PACKAGES_DIR}/{$TARGET_PLATFORM}/${TARGET_RELEASE}-packages.remove"
